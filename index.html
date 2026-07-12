@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>수능 타이머</title>
+    <title>수능 아날로그 타이머</title>
     <style>
         body {
             font-family: 'Malgun Gothic', sans-serif;
@@ -17,7 +17,7 @@
             box-sizing: border-box;
         }
 
-        /* 메인 대시보드 컨테이너 (사이드바 + 시계판) */
+        /* 메인 대시보드 컨테이너 */
         .app-container {
             display: flex;
             background-color: white;
@@ -49,14 +49,12 @@
             border-left: 4px solid #4A90E2;
         }
 
-        /* 색인 스크롤 영역 */
         .mode-menu-wrapper {
             flex: 1;
             overflow-y: auto;
             padding-right: 5px;
         }
 
-        /* 과목별 그룹 스타일 */
         .category-group {
             margin-bottom: 18px;
         }
@@ -70,7 +68,6 @@
             padding-left: 4px;
         }
 
-        /* 모드 선택 버튼 (색인 스타일) */
         .mode-btn {
             display: block;
             width: 100%;
@@ -87,7 +84,7 @@
             margin-bottom: 4px;
             pointer-events: auto;
         }
-        .mode-btn * { pointer-events: none; } /* 자식요소 클릭 가로채기 방지 */
+        .mode-btn * { pointer-events: none; }
 
         .mode-btn:hover {
             background-color: #eef2f7;
@@ -119,7 +116,6 @@
             font-weight: 800;
         }
 
-        /* 음성 안내 기준 안내 문구 */
         #voice-notice {
             font-size: 13px;
             color: #666;
@@ -173,7 +169,7 @@
         }
         .apply-btn:hover { background-color: #357ABD; }
 
-        /* [정밀] 사진 기반 아날로그 시계 */
+        /* 아날로그 시계 */
         .clock {
             width: 280px;
             height: 280px;
@@ -198,7 +194,6 @@
             z-index: 10;
         }
 
-        /* 60개 시/분 초정밀 검은색 눈금 */
         .tick {
             position: absolute;
             top: 0;
@@ -224,7 +219,6 @@
             margin-top: 4px;
         }
 
-        /* 1~12 숫자 정렬 */
         .num {
             position: absolute;
             top: 50%;
@@ -241,7 +235,6 @@
             color: #111;
         }
 
-        /* 시계 바늘 */
         .hand {
             position: absolute;
             bottom: 50%;
@@ -257,7 +250,6 @@
         .minute-hand { width: 4.5px; height: 90px; z-index: 6; }
         .second-hand { width: 2px; height: 105px; background-color: #e74c3c; z-index: 7; }
 
-        /* 디지털 스톱워치 및 하단 컨트롤 */
         .digital-timer {
             font-size: 32px;
             font-weight: bold;
@@ -307,29 +299,29 @@
         <div class="mode-menu-wrapper">
             
             <div class="category-group">
-                <div class="category-name">국어 영역 (10분전 알림)</div>
-                <button class="mode-btn active" onclick="changeMode('korean', this)">국어 풀모드 (8:40~10:00)</button>
+                <div class="category-name">국어 영역 (10분전/1분전 알림)</div>
+                <button class="mode-btn active" onclick="changeMode('korean', this)">[국어] 풀모드 (8:40~10:00)</button>
                 <button class="mode-btn" onclick="changeMode('korean_unmae', this)">[국어] 언매+독서론 (8:40~9:00)</button>
             </div>
 
             <div class="category-group">
-                <div class="category-name">수학 영역 (10분전 알림)</div>
-                <button class="mode-btn" onclick="changeMode('math', this)">수학 풀모드 (10:30~12:10)</button>
+                <div class="category-name">수학 영역 (10분전/1분전 알림)</div>
+                <button class="mode-btn" onclick="changeMode('math', this)">[수학] 풀모드 (10:30~12:10)</button>
                 <button class="mode-btn" onclick="changeMode('math_bridge', this)">[수학] 브릿지 (10:40~11:15)</button>
                 <button class="mode-btn" onclick="changeMode('math_half', this)">[수학] 하프모고 (11:20~12:10)</button>
             </div>
 
             <div class="category-group">
-                <div class="category-name">영어 영역 (10분전 알림)</div>
+                <div class="category-name">영어 영역 (10분전/1분전 알림)</div>
                 <button class="mode-btn" onclick="changeMode('english', this)">영어 풀모드 (13:10~14:20)</button>
                 <button class="mode-btn" onclick="changeMode('english_no_listening', this)">[영어] 듣기제외 (13:30~14:20)</button>
             </div>
 
             <div class="category-group">
-                <div class="category-name">한국사 / 탐구 (5분전 알림)</div>
+                <div class="category-name">한국사 / 탐구 (5분전/1분전 알림)</div>
                 <button class="mode-btn" onclick="changeMode('history', this)">한국사 모드 (14:50~15:20)</button>
-                <button class="mode-btn" onclick="changeMode('inquiry1', this)">탐구 1선택 모드 (15:35~16:05)</button>
-                <button class="mode-btn" onclick="changeMode('inquiry2', this)">탐구 2선택 모드 (16:07~16:37)</button>
+                <button class="mode-btn" onclick="changeMode('inquiry1', this)">[탐구] 1선택 모드 (15:35~16:05)</button>
+                <button class="mode-btn" onclick="changeMode('inquiry2', this)">[탐구] 2선택 모드 (16:07~16:37)</button>
                 <button class="mode-btn" onclick="changeMode('inquiry_full', this)">[탐구] 4교시 풀모드 (15:35~16:37)</button>
             </div>
 
@@ -343,7 +335,7 @@
 
     <div class="main-panel">
         <h1 id="subject-title">국어 풀모드</h1>
-        <div id="voice-notice">📢 안내방송: 10분 전 알림</div>
+        <div id="voice-notice">📢 종료 10분 전 알림</div>
         
         <div class="custom-settings" id="customSettings">
             <div class="input-row">
@@ -372,18 +364,17 @@
 </div>
 
 <script>
-    // [업데이트] 각 과목별 안내방송 잔여 기준 시간(warningMin) 프로퍼티 추가 조치
     const modes = {
-        korean: { title: "국어 풀모드", startH: 8, startM: 40, duration: 80 * 60, warningMin: 10 },
+        korean: { title: "[국어] 풀모드", startH: 8, startM: 40, duration: 80 * 60, warningMin: 10 },
         korean_unmae: { title: "[국어] 언매+독서론 모드", startH: 8, startM: 40, duration: 20 * 60, warningMin: 10 },
-        math: { title: "수학 풀모드", startH: 10, startM: 30, duration: 100 * 60, warningMin: 10 },
+        math: { title: "[수학] 풀모드", startH: 10, startM: 30, duration: 100 * 60, warningMin: 10 },
         math_bridge: { title: "[수학] 브릿지 모드", startH: 10, startM: 40, duration: 35 * 60, warningMin: 10 },
-        math_half: { title: "[수학] 하프모고 모드", startH: 11, startM: 20, duration: 30 * 60, warningMin: 10 },
-        english: { title: "영어 풀모드", startH: 13, startM: 10, duration: 70 * 60, warningMin: 10 },
+        math_half: { title: "[수학] 하프모고 모드", startH: 11, startM: 20, duration: 50 * 60, warningMin: 10 },
+        english: { title: "[영어] 풀모드", startH: 13, startM: 10, duration: 70 * 60, warningMin: 10 },
         english_no_listening: { title: "[영어] 듣기제외 모드", startH: 13, startM: 30, duration: 50 * 60, warningMin: 10 },
         history: { title: "한국사 모드", startH: 14, startM: 50, duration: 30 * 60, warningMin: 5 },
-        inquiry1: { title: "탐구 1선택 모드", startH: 15, startM: 35, duration: 30 * 60, warningMin: 5 },
-        inquiry2: { title: "탐구 2선택 모드", startH: 16, startM: 7, duration: 30 * 60, warningMin: 5 },
+        inquiry1: { title: "[탐구] 1선택 모드", startH: 15, startM: 35, duration: 30 * 60, warningMin: 5 },
+        inquiry2: { title: "[탐구] 2선택 모드", startH: 16, startM: 7, duration: 30 * 60, warningMin: 5 },
         inquiry_full: { title: "[탐구] 4교시 풀모드", startH: 15, startM: 35, duration: 62 * 60, warningMin: 5 },
         custom: { title: "기타 모드 (사용자 지정)", startH: 9, startM: 0, duration: 60 * 60, warningMin: 10 }
     };
@@ -402,19 +393,26 @@
     const voiceNotice = document.getElementById('voice-notice');
     const customSettings = document.getElementById('customSettings');
 
-    // [신규] 브라우저 내장 TTS 음성 송출 함수
-    function playVoiceAlert(text) {
-        if ('speechSynthesis' in window) {
-            // 이전에 나오고 있던 음성이 있다면 취소하여 꼬임 방지
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ko-KR'; // 한국어 설정
-            utterance.rate = 1.0;     // 기본 속도
-            window.speechSynthesis.speak(utterance);
+    // [변경 및 추가] 업로드하신 MP3 파일 매핑 함수
+    function playAudioAlert(type) {
+        let audioFile = '';
+        
+        if (type === '10min') {
+            audioFile = '시험종료 10분 전입니다_.mp3';
+        } else if (type === '5min') {
+            audioFile = '시험종료 5분 전입니다_.mp3';
+        } else if (type === '1min') {
+            audioFile = '종료 1분 전입니다_ 마킹을 마무리 하십시오 .mp3';
+        }
+
+        if (audioFile) {
+            const audio = new Audio(audioFile);
+            audio.play().catch(error => {
+                console.error("오디오 재생 실패 (파일명 매칭 또는 브라우저 권한 확인 필요):", error);
+            });
         }
     }
 
-    // 60개 시/분 분할 검은 눈금 및 1~12 숫자 빌더 기법
     function buildClockTicks() {
         const existingTicks = clockContainer.querySelectorAll('.tick, .num');
         existingTicks.forEach(el => el.remove());
@@ -435,7 +433,6 @@
         }
     }
 
-    // 아날로그 및 디지털 동시 갱신 연산식
     function updateClock() {
         const modeInfo = modes[currentMode];
         const elapsedSeconds = modeInfo.duration - remainingTime;
@@ -460,7 +457,6 @@
         digitalDisplay.innerText = `${String(displayMin).padStart(2, '0')}:${String(displaySec).padStart(2, '0')}`;
     }
 
-    // 사이드바 전용 모드 전환 컨트롤러
     function changeMode(modeKey, btnTarget) {
         if (isRunning) pauseTimer();
         
@@ -475,11 +471,10 @@
         remainingTime = modes[modeKey].duration;
         subjectTitle.innerText = modes[modeKey].title;
         
-        // 현재 안내방송 기준 UI 문구 업데이트
         if(modes[modeKey].warningMin > 0) {
-            voiceNotice.innerText = `📢 안내방송: ${modes[modeKey].warningMin}분 전 알림 대상`;
+            voiceNotice.innerText = `📢 안내방송: ${modes[modeKey].warningMin}분 전 & 1분 전 알림 대상`;
         } else {
-            voiceNotice.innerText = `📢 안내방송: 알림 없음`;
+            voiceNotice.innerText = `📢 안내방송: 1분 전 알림 대상`;
         }
 
         document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
@@ -488,7 +483,6 @@
         updateClock();
     }
 
-    // 기타 모드 유저 커스텀 데이터 동적 파싱
     function applyCustomTime() {
         const startVal = document.getElementById('customStart').value;
         const endVal = document.getElementById('customEnd').value;
@@ -504,7 +498,7 @@
         let startMinutes = startH * 60 + startM;
         let endMinutes = endH * 60 + endM;
 
-        if (endMinutes <= startMinutes) endMinutes += 24 * 60; // 자정 넘김 보정
+        if (endMinutes <= startMinutes) endMinutes += 24 * 60;
 
         const durationMinutes = endMinutes - startMinutes;
 
@@ -512,7 +506,6 @@
         modes.custom.startM = startM;
         modes.custom.duration = durationMinutes * 60;
 
-        // 기타 모드의 경우 유연하게 알림 시간 자동 배정 (전체 시간이 짧으면 5분전, 길면 10분전)
         if (durationMinutes >= 20) {
             modes.custom.warningMin = 10;
         } else if (durationMinutes > 5) {
@@ -523,11 +516,10 @@
 
         remainingTime = modes.custom.duration;
         
-        // UI 변경
         if(modes.custom.warningMin > 0) {
-            voiceNotice.innerText = `📢 안내방송: ${modes.custom.warningMin}분 전 알림 대상`;
+            voiceNotice.innerText = `📢 안내방송: ${modes.custom.warningMin}분 전 & 1분 전 알림 대상`;
         } else {
-            voiceNotice.innerText = `📢 안내방송: 알림 없음`;
+            voiceNotice.innerText = `📢 안내방송: 1분 전 알림 대상`;
         }
         
         if (isRunning) pauseTimer();
@@ -536,7 +528,7 @@
         alert(`사용자 타이머 입력이 완료되었습니다!\n(총 제한 시간: ${durationMinutes}분)`);
     }
 
-    // 메인 타이머 구동 제어부
+    // [정밀 타임 감시 로직 반영]
     function startTimer() {
         if (isRunning) return;
         isRunning = true;
@@ -546,19 +538,25 @@
                 remainingTime--;
                 updateClock();
 
-                // [핵심 로직] 실시간으로 남은 초를 감시하여 정확한 타이밍에 TTS 송출
-                const targetWarningSeconds = modes[currentMode].warningMin * 60;
-                if (targetWarningSeconds > 0 && remainingTime === targetWarningSeconds) {
-                    playVoiceAlert(`${modes[currentMode].warningMin}분 남았습니다.`);
+                // 1. 국어/영어/수학 모드 등 10분 전 알림 (남은 시간 600초)
+                if (modes[currentMode].warningMin === 10 && remainingTime === 600) {
+                    playAudioAlert('10min');
+                }
+
+                // 2. 4교시 탐구/한국사 선택 시 5분 전 알림 (남은 시간 300초)
+                if (modes[currentMode].warningMin === 5 && remainingTime === 300) {
+                    playAudioAlert('5min');
+                }
+
+                // 3. 모든 모드 공통: 종료 1분 전 알림 (남은 시간 60초)
+                if (remainingTime === 60) {
+                    playAudioAlert('1min');
                 }
 
             } else {
                 clearInterval(timerInterval);
                 isRunning = false;
-                
-                // 종료 안내방송 송출
-                playVoiceAlert("설정된 타이머 시간이 완료되었습니다. 수고하셨습니다.");
-                alert("🔔 설정된 타이머 시간이 완료되었습니다! 수고하셨습니다.");
+                alert("🔔 시험이 끝났습니다. 모두 답안지에서 손을 떼세요.");
             }
         }, 1000);
     }
@@ -574,7 +572,6 @@
         updateClock();
     }
 
-    // 이니셜라이징
     buildClockTicks();
     updateClock();
 </script>
