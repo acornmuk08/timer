@@ -316,7 +316,7 @@
                 <div class="category-name">수학 영역 (10분전 알림)</div>
                 <button class="mode-btn" onclick="changeMode('math', this)">수학 풀모드 (10:30~12:10)</button>
                 <button class="mode-btn" onclick="changeMode('math_bridge', this)">[수학] 브릿지 (10:40~11:15)</button>
-                <button class="mode-btn" onclick="changeMode('math_half', this)">[수학] 하프모고 (11:40~12:10)</button>
+                <button class="mode-btn" onclick="changeMode('math_half', this)">[수학] 하프모고 (11:20~12:10)</button>
             </div>
 
             <div class="category-group">
@@ -328,8 +328,8 @@
             <div class="category-group">
                 <div class="category-name">한국사 / 탐구 (5분전 알림)</div>
                 <button class="mode-btn" onclick="changeMode('history', this)">한국사 모드 (14:50~15:20)</button>
-                <button class="mode-btn" onclick="changeMode('inquiry1', this)">탐구 1개 모드 (15:35~16:05)</button>
-                <button class="mode-btn" onclick="changeMode('inquiry2', this)">탐구 2개 모드 (16:07~16:37)</button>
+                <button class="mode-btn" onclick="changeMode('inquiry1', this)">탐구 1선택 모드 (15:35~16:05)</button>
+                <button class="mode-btn" onclick="changeMode('inquiry2', this)">탐구 2선택 모드 (16:07~16:37)</button>
                 <button class="mode-btn" onclick="changeMode('inquiry_full', this)">[탐구] 4교시 풀모드 (15:35~16:37)</button>
             </div>
 
@@ -343,7 +343,7 @@
 
     <div class="main-panel">
         <h1 id="subject-title">국어 풀모드</h1>
-        <div id="voice-notice">📢 안내방송: 10분 전 알림 대상</div>
+        <div id="voice-notice">📢 안내방송: 10분 전 알림</div>
         
         <div class="custom-settings" id="customSettings">
             <div class="input-row">
@@ -378,12 +378,12 @@
         korean_unmae: { title: "[국어] 언매+독서론 모드", startH: 8, startM: 40, duration: 20 * 60, warningMin: 10 },
         math: { title: "수학 풀모드", startH: 10, startM: 30, duration: 100 * 60, warningMin: 10 },
         math_bridge: { title: "[수학] 브릿지 모드", startH: 10, startM: 40, duration: 35 * 60, warningMin: 10 },
-        math_half: { title: "[수학] 하프모고 모드", startH: 11, startM: 40, duration: 30 * 60, warningMin: 10 },
+        math_half: { title: "[수학] 하프모고 모드", startH: 11, startM: 20, duration: 30 * 60, warningMin: 10 },
         english: { title: "영어 풀모드", startH: 13, startM: 10, duration: 70 * 60, warningMin: 10 },
         english_no_listening: { title: "[영어] 듣기제외 모드", startH: 13, startM: 30, duration: 50 * 60, warningMin: 10 },
         history: { title: "한국사 모드", startH: 14, startM: 50, duration: 30 * 60, warningMin: 5 },
-        inquiry1: { title: "탐구 1개 모드", startH: 15, startM: 35, duration: 30 * 60, warningMin: 5 },
-        inquiry2: { title: "탐구 2개 모드", startH: 16, startM: 7, duration: 30 * 60, warningMin: 5 },
+        inquiry1: { title: "탐구 1선택 모드", startH: 15, startM: 35, duration: 30 * 60, warningMin: 5 },
+        inquiry2: { title: "탐구 2선택 모드", startH: 16, startM: 7, duration: 30 * 60, warningMin: 5 },
         inquiry_full: { title: "[탐구] 4교시 풀모드", startH: 15, startM: 35, duration: 62 * 60, warningMin: 5 },
         custom: { title: "기타 모드 (사용자 지정)", startH: 9, startM: 0, duration: 60 * 60, warningMin: 10 }
     };
