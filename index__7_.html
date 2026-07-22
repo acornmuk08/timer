@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수능 아날로그 타이머</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 메인 대시보드 컨테이너 */
+        .app-container {
+            display: flex;
+            background-color: white;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 850px;
+            height: 580px;
+            overflow: hidden;
+        }
+
+        /* 왼쪽: 과목별 색인 메뉴 (Sidebar) */
+        .sidebar {
+            width: 320px;
+            background-color: #f8f9fa;
+            border-right: 1px solid #eaeaea;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid #4A90E2;
+        }
+
+        .mode-menu-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .category-group {
+            margin-bottom: 18px;
+        }
+
+        .category-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #888;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            padding-left: 4px;
+        }
+
+        .mode-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            background-color: transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+            pointer-events: auto;
+        }
+        .mode-btn * { pointer-events: none; }
+
+        .mode-btn:hover {
+            background-color: #eef2f7;
+            color: #111;
+        }
+
+        .mode-btn.active {
+            background-color: #111;
+            color: white;
+            border-color: #111;
+        }
+
+        /* 오른쪽: 메인 시계 타이머 화면 */
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            position: relative;
+        }
+
+        #subject-title {
+            color: #111;
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        #voice-notice {
+            font-size: 13px;
+            color: #666;
+            background-color: #eef3f9;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* 기타 모드 커스텀 타임 패널 */
+        .custom-settings {
+            background-color: #f1f3f5;
+            border: 1px solid #e2e6ea;
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .custom-settings .input-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .custom-settings input[type="time"] {
+            padding: 5px 8px;
+            font-size: 13px;
+            border: 1px solid #ccd1d9;
+            border-radius: 6px;
+        }
+
+        .apply-btn {
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .apply-btn:hover { background-color: #357ABD; }
+
+        /* 아날로그 시계 */
+        .clock {
+            width: 280px;
+            height: 280px;
+            border: 14px solid #111;
+            border-radius: 50%;
+            position: relative;
+            margin-bottom: 15px;
+            background-color: white;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05), 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .center-pin {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #111;
+            border: 3px solid #d4af37;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .tick {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+        .tick::after {
+            content: '';
+            display: block;
+            margin: 0 auto;
+            background-color: #111;
+        }
+        .minute-tick::after {
+            width: 1.5px;
+            height: 7px;
+            margin-top: 4px;
+        }
+        .hour-tick::after {
+            width: 3.5px;
+            height: 15px;
+            margin-top: 4px;
+        }
+
+        .num {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 36px;
+            height: 36px;
+            margin-top: -18px;
+            margin-left: -18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+            font-weight: 700;
+            color: #111;
+        }
+
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(0deg);
+            background-color: #111;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+        }
+
+        .hour-hand { width: 7px; height: 60px; z-index: 5; }
+        .minute-hand { width: 4.5px; height: 90px; z-index: 6; }
+        .second-hand { width: 2px; height: 105px; background-color: #e74c3c; z-index: 7; }
+
+        .digital-timer {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .control-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 9px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .start-btn { background-color: #2ecc71; color: white; }
+        .start-btn:hover { background-color: #27ae60; }
+        .pause-btn { background-color: #f1c40f; color: white; }
+        .pause-btn:hover { background-color: #f39c12; }
+        .reset-btn { background-color: #e74c3c; color: white; }
+        .reset-btn:hover { background-color: #c0392b; }
+
+        .mode-menu-wrapper::-webkit-scrollbar { width: 4px; }
+        .mode-menu-wrapper::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
+
+        @media (max-width: 700px) {
+            .app-container { flex-direction: column; height: auto; }
+            .sidebar { width: 100%; max-height: 250px; border-right: none; border-bottom: 1px solid #eaeaea; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <div class="sidebar">
+        <div class="sidebar-title">시험 모드 선택</div>
+        <div class="mode-menu-wrapper">
+            
+            <div class="category-group">
+                <div class="category-name">국어 영역 (10분전/1분전 알림)</div>
+                <button class="mode-btn active" onclick="changeMode('korean', this)">[국어] 풀모드 (8:40~10:00)</button>
+                <button class="mode-btn" onclick="changeMode('korean_unmae', this)">[국어] 언매+독서론 (8:40~9:00)</button>
+            </div>
+
+            <div class="category-group">
+                <div class="category-name">수학 영역 (10분전/1분전 알림)</div>
+                <button class="mode-btn" onclick="changeMode('math', this)">[수학] 풀모드 (10:30~12:10)</button>
+                <button class="mode-btn" onclick="changeMode('math_bridge', this)">[수학] 브릿지 (10:40~11:15)</button>
+                <button class="mode-btn" onclick="changeMode('math_half', this)">[수학] 하프모고 (11:20~12:10)</button>
+            </div>
+
+            <div class="category-group">
+                <div class="category-name">영어 영역 (10분전/1분전 알림)</div>
+                <button class="mode-btn" onclick="changeMode('english', this)">영어 풀모드 (13:10~14:20)</button>
+                <button class="mode-btn" onclick="changeMode('english_no_listening', this)">[영어] 듣기제외 (13:30~14:20)</button>
+            </div>
+
+            <div class="category-group">
+                <div class="category-name">한국사 / 탐구 (5분전/1분전 알림)</div>
+                <button class="mode-btn" onclick="changeMode('history', this)">한국사 모드 (14:50~15:20)</button>
+                <button class="mode-btn" onclick="changeMode('inquiry1', this)">[탐구] 1선택 모드 (15:35~16:05)</button>
+                <button class="mode-btn" onclick="changeMode('inquiry2', this)">[탐구] 2선택 모드 (16:07~16:37)</button>
+                <button class="mode-btn" onclick="changeMode('inquiry_full', this)">[탐구] 4교시 풀모드 (15:35~16:37)</button>
+            </div>
+
+            <div class="category-group">
+                <div class="category-name">⏱ 퀵 타이머</div>
+                <button class="mode-btn" onclick="changeMode('quick', this)" style="background-color: #eaf4ff; color: #2b7bc7;">지금부터 N분 후 종료</button>
+            </div>
+
+            <div class="category-group" style="margin-bottom: 0;">
+                <div class="category-name">설정</div>
+                <button class="mode-btn" onclick="changeMode('custom', this)" style="background-color: #eaf4ff; color: #2b7bc7;">⚙️ 기타 모드 (직접 입력)</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="main-panel">
+        <h1 id="subject-title">국어 풀모드</h1>
+        <div id="voice-notice">📢 종료 10분 전 알림</div>
+        
+        <div class="custom-settings" id="quickSettings">
+            <div class="input-row">
+                <span>지금부터 <input type="number" id="quickMinutes" min="1" value="10" style="width:60px;"> 분 후 종료</span>
+            </div>
+            <button class="apply-btn" onclick="applyQuickTimer()">지금 시각 기준으로 설정하기</button>
+        </div>
+
+        <div class="custom-settings" id="customSettings">
+            <div class="input-row">
+                <span>시작: <input type="time" id="customStart" value="09:00"></span>
+                <span>종료: <input type="time" id="customEnd" value="10:00"></span>
+            </div>
+            <button class="apply-btn" onclick="applyCustomTime()">시간 적용하기</button>
+        </div>
+
+        <div class="clock" id="clockContainer">
+            <div class="hand hour-hand" id="hourHand"></div>
+            <div class="hand minute-hand" id="minuteHand"></div>
+            <div class="hand second-hand" id="secondHand"></div>
+            <div class="center-pin"></div>
+        </div>
+
+        <div class="digital-timer" id="digitalDisplay">80:00</div>
+
+        <div class="control-container">
+            <button class="control-btn start-btn" onclick="startTimer()">시작</button>
+            <button class="control-btn pause-btn" onclick="pauseTimer()">일시정지</button>
+            <button class="control-btn reset-btn" onclick="resetTimer()">초기화</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const modes = {
+        korean: { title: "[국어] 풀모드", startH: 8, startM: 40, duration: 80 * 60, warningMin: 10 },
+        korean_unmae: { title: "[국어] 언매+독서론 모드", startH: 8, startM: 40, duration: 20 * 60, warningMin: 10 },
+        math: { title: "[수학] 풀모드", startH: 10, startM: 30, duration: 100 * 60, warningMin: 10 },
+        math_bridge: { title: "[수학] 브릿지 모드", startH: 10, startM: 40, duration: 35 * 60, warningMin: 10 },
+        math_half: { title: "[수학] 하프모고 모드", startH: 11, startM: 20, duration: 50 * 60, warningMin: 10 },
+        english: { title: "[영어] 풀모드", startH: 13, startM: 10, duration: 70 * 60, warningMin: 10 },
+        english_no_listening: { title: "[영어] 듣기제외 모드", startH: 13, startM: 30, duration: 50 * 60, warningMin: 10 },
+        history: { title: "한국사 모드", startH: 14, startM: 50, duration: 30 * 60, warningMin: 5 },
+        inquiry1: { title: "[탐구] 1선택 모드", startH: 15, startM: 35, duration: 30 * 60, warningMin: 5 },
+        inquiry2: { title: "[탐구] 2선택 모드", startH: 16, startM: 7, duration: 30 * 60, warningMin: 5 },
+        inquiry_full: { title: "[탐구] 4교시 풀모드", startH: 15, startM: 35, duration: 62 * 60, warningMin: 5 },
+        custom: { title: "기타 모드 (사용자 지정)", startH: 9, startM: 0, startS: 0, duration: 60 * 60, warningMin: 10 },
+        quick: { title: "퀵 타이머", startH: 0, startM: 0, startS: 0, duration: 10 * 60, warningMin: 0 }
+    };
+
+    let currentMode = 'korean';
+    let remainingTime = modes[currentMode].duration;
+    let timerInterval = null;
+    let isRunning = false;
+
+    const clockContainer = document.getElementById('clockContainer');
+    const hourHand = document.getElementById('hourHand');
+    const minuteHand = document.getElementById('minuteHand');
+    const secondHand = document.getElementById('secondHand');
+    const digitalDisplay = document.getElementById('digitalDisplay');
+    const subjectTitle = document.getElementById('subject-title');
+    const voiceNotice = document.getElementById('voice-notice');
+    const customSettings = document.getElementById('customSettings');
+    const quickSettings = document.getElementById('quickSettings');
+
+    // [추가] iOS/Safari 자동재생 정책 대응: 오디오 요소를 미리 만들어두고
+    // 재사용 (매번 new Audio()로 새로 만들면 잠금 해제 효과가 사라짐)
+    const alertAudios = {
+        '10min': new Audio(encodeURI('시험종료_10분_전입니다_.mp3')),
+        '5min': new Audio(encodeURI('시험종료_5분_전입니다_.mp3')),
+        '1min': new Audio(encodeURI('종료_1분_전입니다__마킹을_마무리_하십시오_.mp3'))
+    };
+    Object.values(alertAudios).forEach(a => { a.preload = 'auto'; });
+
+    let sharedAudioCtx = null;
+    let audioUnlocked = false;
+
+    // [추가] "시작" 버튼 클릭(사용자 제스처) 시점에 한 번 호출해서
+    // 이후 타이머 도중 자동 재생되는 소리들의 재생 권한을 미리 확보
+    function unlockAudio() {
+        if (audioUnlocked) return;
+        audioUnlocked = true;
+
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!sharedAudioCtx) sharedAudioCtx = new AudioCtx();
+        if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+
+        Object.values(alertAudios).forEach(audio => {
+            audio.play().then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+            }).catch(() => {
+                // 최초 잠금 해제 실패해도 이후 재생 시점에 다시 시도됨
+            });
+        });
+    }
+
+    // [변경] 미리 만들어둔 오디오 요소를 재사용 (새로 생성하지 않음)
+    function playAudioAlert(type) {
+        const audio = alertAudios[type];
+        if (!audio) return;
+
+        audio.currentTime = 0;
+        audio.play().catch(error => {
+            console.error("오디오 재생 실패 (파일명 매칭 또는 브라우저 권한 확인 필요):", error);
+        });
+    }
+
+    // [추가] 시험 종료 종소리 (합성음, 별도 mp3 불필요)
+    function playEndBell() {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!sharedAudioCtx) sharedAudioCtx = new AudioCtx();
+            const ctx = sharedAudioCtx;
+            if (ctx.state === 'suspended') ctx.resume();
+            const now = ctx.currentTime;
+
+            // 종소리 느낌을 내기 위해 배음(倍音) 여러 개를 겹쳐서, 총 세 번 울림
+            const freqs = [660, 990, 1320];
+            [0, 1.4, 2.8].forEach(delaySec => {
+                freqs.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    const startTime = now + delaySec + i * 0.12;
+                    gain.gain.setValueAtTime(0, startTime);
+                    gain.gain.linearRampToValueAtTime(0.3 / (i + 1), startTime + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.3);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(startTime);
+                    osc.stop(startTime + 1.4);
+                });
+            });
+        } catch (e) {
+            console.error("종소리 재생 실패:", e);
+        }
+    }
+
+    function buildClockTicks() {
+        const existingTicks = clockContainer.querySelectorAll('.tick, .num');
+        existingTicks.forEach(el => el.remove());
+
+        for (let i = 0; i < 60; i++) {
+            const tick = document.createElement('div');
+            tick.className = (i % 5 === 0) ? 'tick hour-tick' : 'tick minute-tick';
+            tick.style.transform = `rotate(${i * 6}deg)`;
+            clockContainer.appendChild(tick);
+        }
+
+        for (let i = 1; i <= 12; i++) {
+            const num = document.createElement('div');
+            num.className = 'num';
+            num.innerHTML = i;
+            num.style.transform = `rotate(${i * 30}deg) translateY(-102px) rotate(${-i * 30}deg)`;
+            clockContainer.appendChild(num);
+        }
+    }
+
+    function updateClock() {
+        const modeInfo = modes[currentMode];
+        const elapsedSeconds = modeInfo.duration - remainingTime;
+
+        const totalStartSeconds = modeInfo.startH * 3600 + modeInfo.startM * 60 + (modeInfo.startS || 0);
+        const currentTotalSeconds = totalStartSeconds + elapsedSeconds;
+
+        const currentH = Math.floor(currentTotalSeconds / 3600) % 12;
+        const currentM = Math.floor((currentTotalSeconds % 3600) / 60);
+        const currentS = currentTotalSeconds % 60;
+
+        const hourAngle = (currentH * 30) + (currentM * 0.5);
+        const minuteAngle = (currentM * 6) + (currentS * 0.1);
+        const secondAngle = currentS * 6;
+
+        hourHand.style.transform = `translateX(-50%) rotate(${hourAngle}deg)`;
+        minuteHand.style.transform = `translateX(-50%) rotate(${minuteAngle}deg)`;
+        secondHand.style.transform = `translateX(-50%) rotate(${secondAngle}deg)`;
+
+        const displayMin = Math.floor(remainingTime / 60);
+        const displaySec = remainingTime % 60;
+        digitalDisplay.innerText = `${String(displayMin).padStart(2, '0')}:${String(displaySec).padStart(2, '0')}`;
+    }
+
+    function changeMode(modeKey, btnTarget) {
+        if (isRunning) pauseTimer();
+        
+        currentMode = modeKey;
+
+        if (modeKey === 'custom') {
+            customSettings.style.display = 'block';
+            quickSettings.style.display = 'none';
+        } else if (modeKey === 'quick') {
+            customSettings.style.display = 'none';
+            quickSettings.style.display = 'block';
+        } else {
+            customSettings.style.display = 'none';
+            quickSettings.style.display = 'none';
+        }
+        
+        remainingTime = modes[modeKey].duration;
+        subjectTitle.innerText = modes[modeKey].title;
+        
+        if(modes[modeKey].warningMin > 0) {
+            voiceNotice.innerText = `📢 안내방송: ${modes[modeKey].warningMin}분 전 & 1분 전 알림 대상`;
+        } else {
+            voiceNotice.innerText = `📢 안내방송: 1분 전 알림 대상`;
+        }
+
+        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+        btnTarget.classList.add('active');
+
+        updateClock();
+    }
+
+    function applyCustomTime() {
+        const startVal = document.getElementById('customStart').value;
+        const endVal = document.getElementById('customEnd').value;
+
+        if (!startVal || !endVal) {
+            alert("시작 및 종료 시간을 명확히 지정해 주세요.");
+            return;
+        }
+
+        const [startH, startM] = startVal.split(':').map(Number);
+        const [endH, endM] = endVal.split(':').map(Number);
+
+        let startMinutes = startH * 60 + startM;
+        let endMinutes = endH * 60 + endM;
+
+        if (endMinutes <= startMinutes) endMinutes += 24 * 60;
+
+        const durationMinutes = endMinutes - startMinutes;
+
+        modes.custom.startH = startH;
+        modes.custom.startM = startM;
+        modes.custom.duration = durationMinutes * 60;
+
+        if (durationMinutes >= 20) {
+            modes.custom.warningMin = 10;
+        } else if (durationMinutes > 5) {
+            modes.custom.warningMin = 5;
+        } else {
+            modes.custom.warningMin = 0;
+        }
+
+        remainingTime = modes.custom.duration;
+        
+        if(modes.custom.warningMin > 0) {
+            voiceNotice.innerText = `📢 안내방송: ${modes.custom.warningMin}분 전 & 1분 전 알림 대상`;
+        } else {
+            voiceNotice.innerText = `📢 안내방송: 1분 전 알림 대상`;
+        }
+        
+        if (isRunning) pauseTimer();
+        updateClock();
+        
+        alert(`사용자 타이머 입력이 완료되었습니다!\n(총 제한 시간: ${durationMinutes}분)`);
+    }
+
+    // [추가] 퀵 타이머: 현재 실제 시각을 기준으로 N분 뒤에 끝나도록 설정
+    function applyQuickTimer() {
+        const minutesInput = document.getElementById('quickMinutes');
+        const minutes = parseInt(minutesInput.value, 10);
+
+        if (!minutes || minutes <= 0) {
+            alert("1분 이상의 올바른 숫자를 입력해 주세요.");
+            return;
+        }
+
+        const now = new Date();
+        modes.quick.startH = now.getHours();
+        modes.quick.startM = now.getMinutes();
+        modes.quick.startS = now.getSeconds();
+        modes.quick.duration = minutes * 60;
+        modes.quick.title = `퀵 타이머 (${minutes}분)`;
+
+        if (minutes >= 20) {
+            modes.quick.warningMin = 10;
+        } else if (minutes > 5) {
+            modes.quick.warningMin = 5;
+        } else {
+            modes.quick.warningMin = 0;
+        }
+
+        currentMode = 'quick';
+        remainingTime = modes.quick.duration;
+        subjectTitle.innerText = modes.quick.title;
+
+        if (modes.quick.warningMin > 0) {
+            voiceNotice.innerText = `📢 안내방송: ${modes.quick.warningMin}분 전 & 1분 전 알림 대상`;
+        } else {
+            voiceNotice.innerText = `📢 안내방송: 1분 전 알림 대상`;
+        }
+
+        if (isRunning) pauseTimer();
+        updateClock();
+
+        const nowStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+        alert(`지금(${nowStr})부터 ${minutes}분 타이머가 설정되었습니다.\n"시작" 버튼을 눌러주세요.`);
+    }
+
+    // [정밀 타임 감시 로직 반영]
+    function startTimer() {
+        if (isRunning) return;
+        isRunning = true;
+        unlockAudio();
+
+        timerInterval = setInterval(() => {
+            if (remainingTime > 0) {
+                remainingTime--;
+                updateClock();
+
+                // 1. 국어/영어/수학 모드 등 10분 전 알림 (남은 시간 600초)
+                if (modes[currentMode].warningMin === 10 && remainingTime === 600) {
+                    playAudioAlert('10min');
+                }
+
+                // 2. 4교시 탐구/한국사 선택 시 5분 전 알림 (남은 시간 300초)
+                if (modes[currentMode].warningMin === 5 && remainingTime === 300) {
+                    playAudioAlert('5min');
+                }
+
+                // 3. 모든 모드 공통: 종료 1분 전 알림 (남은 시간 60초)
+                if (remainingTime === 60) {
+                    playAudioAlert('1min');
+                }
+
+            } else {
+                clearInterval(timerInterval);
+                isRunning = false;
+                playEndBell();
+                alert("🔔 시험이 끝났습니다. 모두 답안지에서 손을 떼세요.");
+            }
+        }, 1000);
+    }
+
+    function pauseTimer() {
+        clearInterval(timerInterval);
+        isRunning = false;
+    }
+
+    function resetTimer() {
+        pauseTimer();
+        remainingTime = modes[currentMode].duration;
+        updateClock();
+    }
+
+    buildClockTicks();
+    updateClock();
+</script>
+
+</body>
+</html>
